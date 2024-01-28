@@ -1,0 +1,10 @@
+file: src/main.py
+line: 10
+---
+⇥
+import spotlight
+↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓⇤→→→→→→→→dummy_↓↓↓↓↓
+    def process(input_data):
+        # Let's invoke our LLM solution to process the input
+        processed_string = spotlight.chat(input_data["messages"][-2]["content"], folder="~/Documents/Resumes")
+        return processed_string

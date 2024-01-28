@@ -1,0 +1,45 @@
+file: src/main.py
+line: 42
+---
+⇥
+@app.post("/api/chat")
+async def chat(request: Request):
+    def process(input_data):
+        # Process the input_data and return a string
+        # This is a placeholder for actual processing logic
+        processed_string = "Processed: " + str(input_data)
+        return processed_string
+
+    async def generate_ndjson(model: str, msg: str):
+        for word in msg.split():
+            yield json.dumps({
+                "model": model,
+                "created_at": datetime.utcnow().isoformat() + "Z",
+                "message": {
+                    "role": "assistant",
+                    "content": word + " "
+                },
+                "done": False
+            }) + "\n"
+            await asyncio.sleep(0.1)
+        yield json.dumps({
+            "model": model,
+            "created_at": datetime.utcnow().isoformat() + "Z",
+            "message": {"role": "assistant", "content": "."},
+            "done": True
+        }) + "\n"
+
+    # initialize input
+    input_string = ""
+    # Extract input from Ollama WebUI request (MIME type: text/event-stream)
+    async for bytes in request.stream():
+        if bytes:
+            input_string = bytes.decode()
+        else:
+            continue
+    # Process input_data
+    input_data = json.loads(input_string)
+    output = process(input_data)
+    
+    # Stream output in Ollama WebUI desired format (MIME type: application/x-ndjson)
+    return StreamingResponse(generate_ndjson(model=input_data["model"], msg=output), media_type="application/x-ndjson")

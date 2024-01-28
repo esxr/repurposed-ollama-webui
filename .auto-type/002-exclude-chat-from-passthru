@@ -1,0 +1,10 @@
+file: src/main.py
+line: 15
+---
+⇥
+        # Check if the request is for the /api/chat route
+        if request.url.path == "/api/chat":
+            # If so, just call the next item in the middleware stack
+            return await call_next(request)
+
+        # Otherwise, handle the request as before
